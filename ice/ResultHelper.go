@@ -27,10 +27,10 @@ type Goal struct{
 	Minute uint8
 }
 
-//Usage: results := ice.GetAllResults(id)
+//Usage: results := getAllResults(id)
 //Pre: id is of type string and is an unique id of a season in one of the icelandic divisions (see: http://www.ksi.is/mot/XML/)
 //Post: results is an array containing all the results for the given season.
-func GetAllResults(seasonId string) ([]Result, error){
+func getAllResults(seasonId string) ([]Result, error){
 
 	results := make([]Result, 0)
 	motLeikir := &motleikir.RequestMotLeikir{MotNumer:seasonId, Xmlns:"http://www2.ksi.is/vefthjonustur/mot/"}
@@ -66,23 +66,10 @@ func GetAllResults(seasonId string) ([]Result, error){
 	return results, nil
 }
 
-//Usage: results :=ice.GetAllResults(id)
-//Pre: id is of type string and is an unique id of a season in one of the icelandic divisions (see: http://www.ksi.is/mot/XML/)
-//Post: results is an array containing all the results, with goal scorers, for the given season.
-func GetAllResultsWithGoalScorers(seasonId string) ([]Result, error){
-	results,_ := GetAllResults(seasonId)
-	for i,_ := range results{
-		goals,_ := GetResultGoals(results[i].Id)
-		results[i].Goals = goals
-	}
-
-	return results, nil
-}
-
-//Usage: 	goals,err := ice.GetResultGoals(id)
+//Usage: 	goals,err := getResultGoals(id)
 //Pre:		id is of type string and is an unique id of a result in one of the icelancdic divisions (see: http://www.ksi.is/mot/XML/)
 //Post:		goals contains all the goals scored in the game with the given id. If err is non nil, an error occured.
-func GetResultGoals(resultId string) ([]Goal, error){
+func getResultGoals(resultId string) ([]Goal, error){
 	goals :=make([]Goal, 0)
 	leikurAtburdir := &leikuratburdir.RequestLeikurAtburdir{LeikurNumer:resultId, Xmlns:"http://www2.ksi.is/vefthjonustur/mot/"}
 	envelope := leikuratburdir.RequestEnvelope{Xmlns:"http://schemas.xmlsoap.org/soap/envelope/"}
@@ -135,13 +122,13 @@ type WorkResponse struct{
 func Worker(in <-chan *WorkRequest, out chan<- *WorkResponse ){
 
 	for w := range in {
-		goals,_ := GetResultGoals(w.id)
+		goals,_ := getResultGoals(w.id)
 		out<-&WorkResponse{index:w.index, goals:goals}
 	}
 }
 
-func GetAllResultsUsingWorkers(id string)([]Result, error) {
-	results,err := GetAllResults(id)
+func GetAllResults(id string)([]Result, error) {
+	results,err := getAllResults(id)
 	if nil != err {
 		return nil, err
 	}
