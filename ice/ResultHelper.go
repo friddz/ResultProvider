@@ -80,7 +80,7 @@ func getResultGoals(resultId string) ([]rp.Goal, error) {
 
 	for _, r := range v.Body.LeikurAtburdirResponse.LeikurAtburdirSvar.ArrayLeikurAtburdir.LeikurAtburdir {
 		if 11 == r.AtburdurNumer || 17 == r.AtburdurNumer {
-			goals = append(goals, rp.Goal{GoalScorerName: r.LeikmadurNafn, Minute: r.AtburdurMinuta})
+			goals = append(goals, rp.Goal{GoalScorerName: r.LeikmadurNafn, Minute: r.AtburdurMinuta, TeamName: r.FelagNafn})
 		}
 	}
 
