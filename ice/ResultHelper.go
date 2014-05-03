@@ -7,32 +7,16 @@ import (
 	"io/ioutil"
 	"strconv"
 	"resultprovider/ice/motleikir"	
-	"resultprovider/ice/leikuratburdir"
+	"resultprovider/ice/leikuratburdir"	
+	rp "resultprovider" 
 )
-
-type Result struct{
-	Id string
-	Round uint8
-	HomeTeamName string
-	AwayTeamName string
-	HomeGoals uint8
-	AwayGoals uint8
-	HomeGoalsAtHalfTime uint8
-	AwayGoalsAtHalfTime uint8
-	Goals []Goal
-}
-
-type Goal struct{
-	GoalScorerName string
-	Minute uint8
-}
 
 //Usage: results := getAllResults(id)
 //Pre: id is of type string and is an unique id of a season in one of the icelandic divisions (see: http://www.ksi.is/mot/XML/)
 //Post: results is an array containing all the results for the given season.
-func getAllResults(seasonId string) ([]Result, error){
+func getAllResults(seasonId string) ([]rp.Result, error){
 
-	results := make([]Result, 0)
+	results := make([]rp.Result, 0)
 	motLeikir := &motleikir.RequestMotLeikir{MotNumer:seasonId, Xmlns:"http://www2.ksi.is/vefthjonustur/mot/"}
 	envelope := motleikir.RequestEnvelope{Xmlns:"http://schemas.xmlsoap.org/soap/envelope/"}
 	soapBody := new(motleikir.RequestSoapBody)
@@ -53,7 +37,7 @@ func getAllResults(seasonId string) ([]Result, error){
 
 	for _, r :=range v.Body.MotLeikirResponse.MotLeikirSvar.ArrayMotLeikir.MotLeikur{
 		results = append(	results, 
-							Result{Id:					r.LeikurNumer,
+							rp.Result{Id:				r.LeikurNumer,
 								Round:					parseToUint8(r.UmferdNumer),
 								HomeTeamName:			r.FelagHeimaNafn,
 								AwayTeamName:			r.FelagUtiNafn,
@@ -69,8 +53,8 @@ func getAllResults(seasonId string) ([]Result, error){
 //Usage: 	goals,err := getResultGoals(id)
 //Pre:		id is of type string and is an unique id of a result in one of the icelancdic divisions (see: http://www.ksi.is/mot/XML/)
 //Post:		goals contains all the goals scored in the game with the given id. If err is non nil, an error occured.
-func getResultGoals(resultId string) ([]Goal, error){
-	goals :=make([]Goal, 0)
+func getResultGoals(resultId string) ([]rp.Goal, error){
+	goals :=make([]rp.Goal, 0)
 	leikurAtburdir := &leikuratburdir.RequestLeikurAtburdir{LeikurNumer:resultId, Xmlns:"http://www2.ksi.is/vefthjonustur/mot/"}
 	envelope := leikuratburdir.RequestEnvelope{Xmlns:"http://schemas.xmlsoap.org/soap/envelope/"}
 	soapBody := &leikuratburdir.RequestSoapBody{Xmlns:"http://www.w3.org/2001/XMLSchema-instance"}
@@ -96,7 +80,7 @@ func getResultGoals(resultId string) ([]Goal, error){
 
 	for _, r :=range v.Body.LeikurAtburdirResponse.LeikurAtburdirSvar.ArrayLeikurAtburdir.LeikurAtburdir{
 		if 11 == r.AtburdurNumer || 17 == r.AtburdurNumer {
-			goals = append(goals, Goal{GoalScorerName:r.LeikmadurNafn, Minute:r.AtburdurMinuta})
+			goals = append(goals, rp.Goal{GoalScorerName:r.LeikmadurNafn, Minute:r.AtburdurMinuta})
 		}
 	}
 
@@ -116,7 +100,7 @@ type WorkRequest struct{
 
 type WorkResponse struct{
 	index int
-	goals []Goal
+	goals []rp.Goal
 }
 
 func Worker(in <-chan *WorkRequest, out chan<- *WorkResponse ){
@@ -127,7 +111,7 @@ func Worker(in <-chan *WorkRequest, out chan<- *WorkResponse ){
 	}
 }
 
-func GetAllResults(id string)([]Result, error) {
+func GetAllResults(id string)([]rp.Result, error) {
 	results,err := getAllResults(id)
 	if nil != err {
 		return nil, err

@@ -15,4 +15,5 @@ type Result struct{
 type Goal struct{
 	GoalScorerName string
 	Minute uint8
+	TeamName string
 }
