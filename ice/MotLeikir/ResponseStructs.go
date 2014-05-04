@@ -31,6 +31,7 @@ type ResponseMotLeikur struct {
 	XMLName                 xml.Name `xml:"MotLeikur"`
 	LeikurNumer             string
 	UmferdNumer             string
+	LeikDagur               string
 	FelagHeimaNafn          string
 	FelagUtiNafn            string
 	UrslitHeima             string

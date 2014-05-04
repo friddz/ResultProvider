@@ -9,6 +9,7 @@ import (
 	"resultprovider/ice/leikuratburdir"
 	"resultprovider/ice/motleikir"
 	"strconv"
+	"time"
 )
 
 //Usage: results := getAllResults(id)
@@ -38,6 +39,7 @@ func getAllResults(seasonId string) ([]rp.Result, error) {
 	for _, r := range v.Body.MotLeikirResponse.MotLeikirSvar.ArrayMotLeikir.MotLeikur {
 		results = append(results,
 			rp.Result{Id: r.LeikurNumer,
+				Date:                parseToTime(r.LeikDagur),
 				Round:               parseToUint8(r.UmferdNumer),
 				HomeTeamName:        r.FelagHeimaNafn,
 				AwayTeamName:        r.FelagUtiNafn,
@@ -87,6 +89,11 @@ func getResultGoals(resultId string) ([]rp.Goal, error) {
 	return goals, nil
 }
 
+func parseToTime(s string) time.Time {
+	value, _ := time.Parse("2006-01-02T15:04:05", s)
+	return value
+}
+
 func parseToUint8(s string) uint8 {
 	value, _ := strconv.ParseUint(s, 10, 8)
 	return uint8(value)
@@ -108,6 +115,17 @@ func Worker(in <-chan *WorkRequest, out chan<- *WorkResponse) {
 		goals, _ := getResultGoals(w.id)
 		out <- &WorkResponse{index: w.index, goals: goals}
 	}
+}
+
+func GetAllResultsForMultipleSeasons(ids []string) ([]rp.Season, error) {
+	seasons := make([]rp.Season, 0)
+	results := make([]rp.Result, 0)
+	for _, id := range ids {
+		results, _ = GetAllResults(id)
+		seasons = append(seasons, rp.Season{Id: id, Results: results})
+	}
+	return seasons, nil
+
 }
 
 func GetAllResults(id string) ([]rp.Result, error) {
