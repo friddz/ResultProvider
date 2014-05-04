@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+const goalId = 11
+const goalFromPenaltyId = 17
+const ownGoalId = 12
+
 //Usage: results := getAllResults(id)
 //Pre: id is of type string and is an unique id of a season in one of the icelandic divisions (see: http://www.ksi.is/mot/XML/)
 //Post: results is an array containing all the results for the given season.
@@ -81,14 +85,24 @@ func getResultGoals(resultId string) ([]rp.Goal, error) {
 	}
 
 	for _, r := range v.Body.LeikurAtburdirResponse.LeikurAtburdirSvar.ArrayLeikurAtburdir.LeikurAtburdir {
-		if 11 == r.AtburdurNumer || 17 == r.AtburdurNumer {
-			goals = append(goals, rp.Goal{GoalScorerName: r.LeikmadurNafn, Minute: r.AtburdurMinuta, TeamName: r.FelagNafn})
+		if goalId == r.AtburdurNumer || goalFromPenaltyId == r.AtburdurNumer || ownGoalId == r.AtburdurNumer {
+			goals = append(goals, rp.Goal{GoalScorerName: r.LeikmadurNafn, Minute: r.AtburdurMinuta, TeamName: r.FelagNafn, Type : getGoalType(r.AtburdurNumer)})
 		}
 	}
 
 	return goals, nil
 }
 
+func getGoalType(eventId uint8) rp.GoalType {
+	goalType := rp.RegularGoal
+	if goalFromPenaltyId == eventId {
+		goalType = rp.GoalFromPenalty
+	} else if ownGoalId == eventId {
+		goalType = rp.OwnGoal
+	}
+
+	return goalType
+}
 func parseToTime(s string) time.Time {
 	value, _ := time.Parse("2006-01-02T15:04:05", s)
 	return value

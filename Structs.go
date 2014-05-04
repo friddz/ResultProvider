@@ -19,9 +19,19 @@ type Goal struct {
 	GoalScorerName string
 	Minute         uint8
 	TeamName       string
+	Type 	   GoalType
 }
 
 type Season struct {
 	Id      string
 	Results []Result
 }
+
+type GoalType uint8
+
+const 
+(
+	RegularGoal GoalType = 1
+	OwnGoal = 2
+	GoalFromPenalty = 3
+)
