@@ -38,4 +38,5 @@ type ResponseMotLeikur struct {
 	UrslitUti               string
 	StadaFyrriHalfleikHeima string
 	StadaFyrriHalfleikUti   string
+	SkyrslaStada            string
 }

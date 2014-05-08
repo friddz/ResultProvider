@@ -16,6 +16,8 @@ const goalId = 11
 const goalFromPenaltyId = 17
 const ownGoalId = 12
 
+const confirmedResult = "S"
+
 //Usage: results := getAllResults(id)
 //Pre: id is of type string and is an unique id of a season in one of the icelandic divisions (see: http://www.ksi.is/mot/XML/)
 //Post: results is an array containing all the results for the given season.
@@ -41,16 +43,18 @@ func getAllResults(seasonId string) ([]rp.Result, error) {
 	}
 
 	for _, r := range v.Body.MotLeikirResponse.MotLeikirSvar.ArrayMotLeikir.MotLeikur {
-		results = append(results,
-			rp.Result{Id: r.LeikurNumer,
-				Date:                parseToTime(r.LeikDagur),
-				Round:               parseToUint8(r.UmferdNumer),
-				HomeTeamName:        r.FelagHeimaNafn,
-				AwayTeamName:        r.FelagUtiNafn,
-				HomeGoals:           parseToUint8(r.UrslitHeima),
-				AwayGoals:           parseToUint8(r.UrslitUti),
-				HomeGoalsAtHalfTime: parseToUint8(r.StadaFyrriHalfleikHeima),
-				AwayGoalsAtHalfTime: parseToUint8(r.StadaFyrriHalfleikUti)})
+		if confirmedResult == r.SkyrslaStada {
+			results = append(results,
+				rp.Result{Id: r.LeikurNumer,
+					Date:                parseToTime(r.LeikDagur),
+					Round:               parseToUint8(r.UmferdNumer),
+					HomeTeamName:        r.FelagHeimaNafn,
+					AwayTeamName:        r.FelagUtiNafn,
+					HomeGoals:           parseToUint8(r.UrslitHeima),
+					AwayGoals:           parseToUint8(r.UrslitUti),
+					HomeGoalsAtHalfTime: parseToUint8(r.StadaFyrriHalfleikHeima),
+					AwayGoalsAtHalfTime: parseToUint8(r.StadaFyrriHalfleikUti)})
+		}
 	}
 
 	return results, nil
@@ -86,7 +90,7 @@ func getResultGoals(resultId string) ([]rp.Goal, error) {
 
 	for _, r := range v.Body.LeikurAtburdirResponse.LeikurAtburdirSvar.ArrayLeikurAtburdir.LeikurAtburdir {
 		if goalId == r.AtburdurNumer || goalFromPenaltyId == r.AtburdurNumer || ownGoalId == r.AtburdurNumer {
-			goals = append(goals, rp.Goal{GoalScorerName: r.LeikmadurNafn, Minute: r.AtburdurMinuta, TeamName: r.FelagNafn, Type : getGoalType(r.AtburdurNumer)})
+			goals = append(goals, rp.Goal{GoalScorerName: r.LeikmadurNafn, Minute: r.AtburdurMinuta, TeamName: r.FelagNafn, Type: getGoalType(r.AtburdurNumer)})
 		}
 	}
 
