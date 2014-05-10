@@ -18,6 +18,25 @@ const ownGoalId = 12
 
 const confirmedResult = "S"
 
+func getInternalSeasonId(externalId string) string {
+
+	if externalId == "2014"{
+		return "32265"
+	} else if externalId == "2013"{
+		return "29465"
+	}else if externalId == "2012"{
+		return "26463"
+	}else if externalId == "2011"{
+		return "23425"
+	}else if externalId == "2010"{
+		return "19847"
+	}else if externalId == "2009" {
+		return "17548"
+	}else{
+		panic("Unknown season id")
+	}
+}
+
 //Usage: results := getAllResults(id)
 //Pre: id is of type string and is an unique id of a season in one of the icelandic divisions (see: http://www.ksi.is/mot/XML/)
 //Post: results is an array containing all the results for the given season.
@@ -139,7 +158,7 @@ func GetAllResultsForMultipleSeasons(ids []string) ([]rp.Season, error) {
 	seasons := make([]rp.Season, 0)
 	results := make([]rp.Result, 0)
 	for _, id := range ids {
-		results, _ = GetAllResults(id)
+		results, _ = GetAllResults(getInternalSeasonId(id))
 		seasons = append(seasons, rp.Season{Id: id, Results: results})
 	}
 	return seasons, nil
