@@ -20,19 +20,19 @@ const confirmedResult = "S"
 
 func getInternalSeasonId(externalId string) string {
 
-	if externalId == "2014"{
+	if externalId == "2014" {
 		return "32265"
-	} else if externalId == "2013"{
+	} else if externalId == "2013" {
 		return "29465"
-	}else if externalId == "2012"{
+	} else if externalId == "2012" {
 		return "26463"
-	}else if externalId == "2011"{
+	} else if externalId == "2011" {
 		return "23425"
-	}else if externalId == "2010"{
+	} else if externalId == "2010" {
 		return "19847"
-	}else if externalId == "2009" {
+	} else if externalId == "2009" {
 		return "17548"
-	}else{
+	} else {
 		panic("Unknown season id")
 	}
 }
