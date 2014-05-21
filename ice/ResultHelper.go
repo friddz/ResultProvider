@@ -36,6 +36,14 @@ func getInternalSeasonId(externalId string) string {
 		return "19847"
 	} else if externalId == "2009" {
 		return "17548"
+	} else if externalId == "2008" {
+		return "16788"
+	} else if externalId == "2007" {
+		return "14843"
+	} else if externalId == "2006" {
+		return "12486"
+	} else if externalId == "2005" {
+		return "8585"
 	} else {
 		panic("Unknown season id")
 	}
