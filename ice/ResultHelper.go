@@ -2,14 +2,18 @@ package ice
 
 import (
 	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"io/ioutil"
 	"net/http"
+	"os"
 	rp "resultprovider"
 	"resultprovider/ice/leikuratburdir"
 	"resultprovider/ice/motleikir"
+	"sort"
 	"strconv"
 	"time"
+	//"strings"
 )
 
 const goalId = 11
@@ -155,6 +159,20 @@ func Worker(in <-chan *WorkRequest, out chan<- *WorkResponse) {
 }
 
 func GetAllResultsForMultipleSeasons(ids []string) ([]rp.Season, error) {
+	fileName := getFileName(ids)
+	if existsInCache(fileName) {
+		return getResultsFromCache(fileName)
+	} else {
+		seasons, err := getAllResultsForMultipleSeasons(ids)
+		if err != nil {
+			return nil, err
+		}
+		err = writeToCache(seasons, ids)
+		return seasons, err
+	}
+}
+
+func getAllResultsForMultipleSeasons(ids []string) ([]rp.Season, error) {
 	seasons := make([]rp.Season, 0)
 	results := make([]rp.Result, 0)
 	for _, id := range ids {
@@ -163,6 +181,48 @@ func GetAllResultsForMultipleSeasons(ids []string) ([]rp.Season, error) {
 	}
 	return seasons, nil
 
+}
+
+func getResultsFromCache(fileName string) ([]rp.Season, error) {
+	seasons := []rp.Season{}
+	data, err := ioutil.ReadFile(fileName)
+	if nil != err {
+		return seasons, err
+	}
+	err = json.Unmarshal(data, &seasons)
+	return seasons, err
+}
+
+func existsInCache(fileName string) bool {
+	_, err := os.Stat(fileName)
+	return nil == err
+}
+func writeToCache(seasons []rp.Season, ids []string) error {
+	blob, err := json.Marshal(seasons)
+	if err != nil {
+		return err
+	}
+	fileName := getFileName(ids)
+	err = ioutil.WriteFile(fileName, blob, 0644)
+	return err
+}
+
+func getFileName(ids []string) string {
+	return "C:/tmp/" + generateHash(ids) + ".json"
+}
+
+func generateHash(ids []string) string {
+	hash := 23
+	sort.Strings(ids)
+	for _, i := range ids {
+		val, err := strconv.Atoi(i)
+		if nil != err {
+			panic(err)
+		}
+		hash = hash*31 + val
+	}
+	//return strings.Replace(strconv.Itoa(hash), "-", "_", 1)
+	return strconv.Itoa(hash)
 }
 
 func GetAllResults(id string) ([]rp.Result, error) {
