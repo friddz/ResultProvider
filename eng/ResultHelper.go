@@ -38,6 +38,9 @@ func GetAllResults(id string) ([]rp.Result, error) {
 		if match[2] == "HomeTeam" {
 			continue
 		}
+		if match[4] == "" {
+			continue
+		}
 
 		results = append(results,
 			rp.Result{Id: "1",
