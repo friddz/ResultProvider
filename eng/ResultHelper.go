@@ -34,7 +34,7 @@ func GetAllResults(id string) ([]rp.Result, error) {
 	re := regexp.MustCompile(",")
 	for scanner.Scan() {
 		line := scanner.Text()
-		match := re.Split(line, 10)
+		match := re.Split(line, 24)
 		if match[2] == "HomeTeam" {
 			continue
 		}
@@ -45,10 +45,11 @@ func GetAllResults(id string) ([]rp.Result, error) {
 				Round:               1,
 				HomeTeamName:        match[2],
 				AwayTeamName:        match[3],
-				HomeGoals:           stringToInt(match[4]),
-				AwayGoals:           stringToInt(match[5]),
-				HomeGoalsAtHalfTime: stringToInt(match[7]),
-				AwayGoalsAtHalfTime: stringToInt(match[8])})
+				HomeGoals:           stringToUInt8(match[4]),
+				AwayGoals:           stringToUInt8(match[5]),
+				HomeGoalsAtHalfTime: stringToUInt8(match[7]),
+				AwayGoalsAtHalfTime: stringToUInt8(match[8]),
+				Cards:               rp.CardInfo{HomeTeamNumberOfYellowCards: stringToUInt8(match[19]), HomeTeamNumberOfRedCards: stringToUInt8(match[21]), AwayTeamNumberOfYellowCards: stringToUInt8(match[20]), AwayTeamNumberOfRedCards: stringToUInt8(match[22])}})
 	}
 	return results, nil
 }
@@ -67,7 +68,7 @@ func getDate(dateString string) time.Time {
 	}
 	return resultTime
 }
-func stringToInt(str string) uint8 {
+func stringToUInt8(str string) uint8 {
 	value, err := strconv.Atoi(str)
 	if nil != err {
 		fmt.Printf("Failed parsing string to int. %v", err)
