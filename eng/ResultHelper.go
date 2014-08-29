@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	rp "resultprovider"
+	rp "github.com/friddz/ResultProvider"
 	"strconv"
 	"time"
 )
