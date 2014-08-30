@@ -54,6 +54,7 @@ func GetAllResults(id string) ([]rp.Result, error) {
 				HomeGoalsAtHalfTime: stringToUInt8(match[7]),
 				AwayGoalsAtHalfTime: stringToUInt8(match[8]),
 				Cards:               rp.CardInfo{HomeTeamNumberOfYellowCards: stringToUInt8(match[19]), HomeTeamNumberOfRedCards: stringToUInt8(match[21]), AwayTeamNumberOfYellowCards: stringToUInt8(match[20]), AwayTeamNumberOfRedCards: stringToUInt8(match[22])}})
+		gameIndex = gameIndex + 1
 	}
 	return results, nil
 }
