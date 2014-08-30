@@ -46,7 +46,7 @@ func GetAllResults(id string) ([]rp.Result, error) {
 		results = append(results,
 			rp.Result{Id: "1",
 				Date:                getDate(match[1]),
-				Round:               unit8(gameIndex / 10 + 1),
+				Round:               uint8(gameIndex / 10 + 1),
 				HomeTeamName:        match[2],
 				AwayTeamName:        match[3],
 				HomeGoals:           stringToUInt8(match[4]),
