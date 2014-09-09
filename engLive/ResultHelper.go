@@ -28,14 +28,15 @@ func GetAllResults(id string) ([]rp.Result, error) {
 	  	}else {
 		  	link, _:= (s.Find(".fs a").Attr("href"))
 		  	link = strings.TrimSpace(link)
-	  		results = append(results, resultDetails("http://livescore.com/"+link))
+	  		results = append(results, resultDetails("http://livescore.com/"+link, date))
 	  	}
   	})
 	return results, nil
 }
 
-func resultDetails(url string)rp.Result {
+func resultDetails(url string, date time.Time)rp.Result {
 	result := rp.Result{Goals:[]rp.Goal{}, Cards:rp.CardInfo{}}
+	result.Date = date
 	doc, err := goquery.NewDocument(url) 
   	if err != nil {
     	log.Fatal(err)
