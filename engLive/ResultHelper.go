@@ -8,7 +8,24 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"sort"
+	"fmt"
 )
+
+type ByDateAsc []rp.Result
+
+func (p ByDateAsc) Len() int {
+	return len(p)
+}
+
+func (p ByDateAsc) Swap(i int, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+func (p ByDateAsc) Less(i int, j int) bool {
+	return p[i].Date.Before(p[j].Date)
+}
+
 
 func GetAllResults(id string) ([]rp.Result, error) {
 	results := make([]rp.Result, 0)
@@ -29,6 +46,12 @@ func GetAllResults(id string) ([]rp.Result, error) {
 			results = append(results, resultDetails("http://livescore.com/"+link, date))
 		}
 	})
+
+	sort.Sort(ByDateAsc(results))
+	for i,_ := range results {
+		results[i].Round = uint8(i / 10 + 1)
+		fmt.Printf("match round %v=>%v\n", i, results[i].Round)
+	}
 	return results, nil
 }
 
