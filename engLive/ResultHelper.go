@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 	"sort"
-	"fmt"
 )
 
 type ByDateAsc []rp.Result
@@ -50,7 +49,6 @@ func GetAllResults(id string) ([]rp.Result, error) {
 	sort.Sort(ByDateAsc(results))
 	for i,_ := range results {
 		results[i].Round = uint8(i / 10 + 1)
-		fmt.Printf("match round %v=>%v\n", i, results[i].Round)
 	}
 	return results, nil
 }
