@@ -25,8 +25,65 @@ func (p ByDateAsc) Less(i int, j int) bool {
 	return p[i].Date.Before(p[j].Date)
 }
 
-
 func GetAllResults(id string) ([]rp.Result, error) {
+	results,_ := GetResults(id)
+	liveResults,_ := GetLiveResults(id)
+	allResults := combine(results, liveResults)
+	return allResults, nil
+}
+
+
+func combine(results []rp.Result, liveResults []rp.Result)[]rp.Result {
+	combinedResults := []rp.Result{}
+	for _,res := range results {
+		combinedResults = append(combinedResults, res)
+	}
+
+	for _, liveRes := range liveResults {
+		found := false
+		for _,res := range results {
+			if(liveRes.HomeTeamName == res.HomeTeamName && liveRes.AwayTeamName == res.AwayTeamName && liveRes.Date.Equal(res.Date)) {
+				found = true
+			}
+		}
+		if(!found) {
+			combinedResults = append(combinedResults, liveRes)
+		}
+	}
+	return combinedResults
+}
+
+func GetLiveResults(id string) ([]rp.Result, error) {
+	results := make([]rp.Result, 0)
+
+	doc, err := goquery.NewDocument("http://www.livescore.com/soccer/england/premier-league/")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	date := time.Now()
+	doc.Find(".league-table tr").Each(func(i int, s *goquery.Selection) {
+		dateString := strings.TrimSpace(s.Find(".date").Text())
+		if (len(dateString)) > 0 {
+			date, _ = time.Parse("2006 January 02", "2014 "+dateString)
+		} else {
+			isFullTime := "FT" == strings.TrimSpace(s.Find(".fd").Text())
+			if(isFullTime){
+				link, _ := (s.Find(".fs a").Attr("href"))
+				link = strings.TrimSpace(link)
+				results = append(results, resultDetails("http://livescore.com/"+link, date))
+			}
+		}
+	})
+
+	sort.Sort(ByDateAsc(results))
+	for i,_ := range results {
+		results[i].Round = uint8(i / 10 + 1)
+	}
+	return results, nil
+}
+
+func GetResults(id string) ([]rp.Result, error) {
 	results := make([]rp.Result, 0)
 
 	doc, err := goquery.NewDocument("http://www.livescore.com/soccer/england/premier-league/results/all/")
