@@ -42,3 +42,9 @@ const (
 	OwnGoal                  = 2
 	GoalFromPenalty          = 3
 )
+
+type Fixture struct {
+	Date time.Time
+	HomeTeamName string
+	AwayTeamName string
+}
