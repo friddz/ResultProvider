@@ -25,6 +25,52 @@ func (p ByDateAsc) Less(i int, j int) bool {
 	return p[i].Date.Before(p[j].Date)
 }
 
+type FixtureByDateAsc []rp.Fixture
+
+func (p FixtureByDateAsc) Len() int {
+	return len(p)
+}
+
+func (p FixtureByDateAsc) Swap(i int, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+func (p FixtureByDateAsc) Less(i int, j int) bool {
+	return p[i].Date.Before(p[j].Date)
+}
+
+func GetAllFixtures(id string)([]rp.Fixture, error) {
+	fixtures := make([]rp.Fixture, 0)
+
+	doc, err := goquery.NewDocument("http://www.livescore.com/soccer/england/premier-league/fixtures/all/")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	date := time.Now()
+	dateString := ""
+	doc.Find(".league-table tr").Each(func(i int, s *goquery.Selection) {
+		if (len(strings.TrimSpace(s.Find(".date").Text()))) > 0 {
+			dateString = strings.TrimSpace(s.Find(".date").Text())
+		} else {
+			isFullTime := "FT" == strings.TrimSpace(s.Find(".fd").Text())
+			if(!isFullTime){
+				timeString := strings.TrimSpace(s.Find(".fd").Text())
+				matchDateString := dateString
+				if(!strings.Contains(dateString, "2015")){
+					matchDateString = dateString + ", 2014"
+				}
+				date, _ = time.Parse("January 2, 2006, 15:04", matchDateString +", "+ timeString)
+				homeTeamName := strings.TrimSpace(s.Find(".fh").Text())
+				awayTeamName := strings.TrimSpace(s.Find(".fa").Text())
+				fixtures = append(fixtures, rp.Fixture{Date:date, HomeTeamName:homeTeamName, AwayTeamName:awayTeamName})
+			}
+		}
+	})
+
+	sort.Sort(FixtureByDateAsc(fixtures))
+	return fixtures, nil
+}
 func GetAllResults(id string) ([]rp.Result, error) {
 	results,_ := GetResults(id)
 	liveResults,_ := GetLiveResults(id)
