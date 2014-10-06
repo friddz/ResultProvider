@@ -11,6 +11,7 @@ import (
 	"sort"
 )
 var resultDateFormat string  = "2006 January 2"
+var fixtureDateFormat string = "January 2, 2006, 15:04"
 type ByDateAsc []rp.Result
 
 func (p ByDateAsc) Len() int {
@@ -60,7 +61,7 @@ func GetAllFixtures(id string)([]rp.Fixture, error) {
 				if(!strings.Contains(dateString, "2015")){
 					matchDateString = dateString + ", 2014"
 				}
-				date, _ = time.Parse("January 2, 2006, 15:04", matchDateString +", "+ timeString)
+				date, _ = time.Parse(fixtureDateFormat, matchDateString +", "+ timeString)
 				homeTeamName := strings.TrimSpace(s.Find(".fh").Text())
 				awayTeamName := strings.TrimSpace(s.Find(".fa").Text())
 				fixtures = append(fixtures, rp.Fixture{Date:date, HomeTeamName:homeTeamName, AwayTeamName:awayTeamName})
