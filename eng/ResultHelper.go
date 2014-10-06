@@ -10,12 +10,14 @@ import (
 	"time"
 )
 
-var downloadUrl string = "http://www.football-data.co.uk/mmz4281/1415/"
+var downloadUrl string = "http://www.football-data.co.uk/mmz4281/"
 
 func getInternalSeasonId(externalId string) string {
 
 	if externalId == "2015" {
-		return "E0.csv"
+		return "1415/E0.csv"
+	} else if externalId == "2014" {
+		return "1314/E0.csv"
 	} else {
 		panic("Unknown season id")
 	}
