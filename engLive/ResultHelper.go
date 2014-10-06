@@ -10,7 +10,7 @@ import (
 	"time"
 	"sort"
 )
-
+var resultDateFormat string  = "2006 January 2"
 type ByDateAsc []rp.Result
 
 func (p ByDateAsc) Len() int {
@@ -111,7 +111,7 @@ func GetLiveResults(id string) ([]rp.Result, error) {
 	doc.Find(".league-table tr").Each(func(i int, s *goquery.Selection) {
 		dateString := strings.TrimSpace(s.Find(".date").Text())
 		if (len(dateString)) > 0 {
-			date, _ = time.Parse("2006 January 02", "2014 "+dateString)
+			date, _ = time.Parse(resultDateFormat, "2014 "+dateString)
 		} else {
 			isFullTime := "FT" == strings.TrimSpace(s.Find(".fd").Text())
 			if(isFullTime){
@@ -141,7 +141,7 @@ func GetResults(id string) ([]rp.Result, error) {
 	doc.Find(".league-table tr").Each(func(i int, s *goquery.Selection) {
 		dateString := strings.TrimSpace(s.Find(".date").Text())
 		if (len(dateString)) > 0 {
-			date, _ = time.Parse("2006 January 02", "2014 "+dateString)
+			date, _ = time.Parse(resultDateFormat, "2014 "+dateString)
 		} else {
 			link, _ := (s.Find(".fs a").Attr("href"))
 			link = strings.TrimSpace(link)
