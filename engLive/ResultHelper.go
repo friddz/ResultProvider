@@ -162,19 +162,21 @@ func resultDetails(url string, date time.Time) rp.Result {
 	result.Date = date
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	r, _ := regexp.Compile("[\\d]")
-	doc.Find(".match-details tr").Each(func(i int, s *goquery.Selection) {
+	doc.Find(".row, .row-gray").Each(func(i int, s *goquery.Selection) {
 		if 0 == i {
-			result.HomeTeamName = strings.TrimSpace(s.Find(".home").Text())
-			result.AwayTeamName = strings.TrimSpace(s.Find(".awy").Text())
+			result.HomeTeamName = strings.TrimSpace(s.Find(".name").First().Text())
+			result.AwayTeamName = strings.TrimSpace(s.Find(".name").Last().Text())
 			scoreString := strings.TrimSpace(s.Find(".sco").Text())
 			goals := r.FindAllString(scoreString, -1)
 			result.HomeGoals = parseToUint8(goals[0])
 			result.AwayGoals = parseToUint8(goals[1])
 		} else if 1 == i {
+			fmt.Println(s.Text())
 			scoreString := strings.TrimSpace(s.Find(".sco").Text())
+			fmt.Println("scorestring:" +scoreString )
 			goals := r.FindAllString(scoreString, -1)
 			homeGoals := uint8(0)
 			awayGoals := uint8(0)
