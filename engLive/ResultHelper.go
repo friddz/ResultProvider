@@ -174,9 +174,7 @@ func resultDetails(url string, date time.Time) rp.Result {
 			result.HomeGoals = parseToUint8(goals[0])
 			result.AwayGoals = parseToUint8(goals[1])
 		} else if 1 == i {
-			fmt.Println(s.Text())
 			scoreString := strings.TrimSpace(s.Find(".sco").Text())
-			fmt.Println("scorestring:" +scoreString )
 			goals := r.FindAllString(scoreString, -1)
 			homeGoals := uint8(0)
 			awayGoals := uint8(0)
