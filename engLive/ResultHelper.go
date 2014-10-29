@@ -231,10 +231,10 @@ func parseToUint8(s string) uint8 {
 }
 
 func isHomeTeam(s *goquery.Selection, id string) bool {
-	classAttr, exists := s.Find(id).Parent().Find(".name").Attr("class")
+	classAttr, exists := s.Find(id).Parent().Parent().Attr("class")
 	isHomeTeam := true
 	if exists {
-		if strings.Contains(classAttr, "left") {
+		if strings.Contains(classAttr, "tright") {
 			isHomeTeam = false
 		}
 	}
