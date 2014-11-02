@@ -234,7 +234,7 @@ func isHomeTeam(s *goquery.Selection, id string) bool {
 	classAttr, exists := s.Find(id).Parent().Parent().Attr("class")
 	isHomeTeam := true
 	if exists {
-		if strings.Contains(classAttr, "tright") {
+		if !strings.Contains(classAttr, "tright") {
 			isHomeTeam = false
 		}
 	}
