@@ -50,20 +50,20 @@ func GetAllFixtures(id string)([]rp.Fixture, error) {
 
 	date := time.Now()
 	dateString := ""
-	doc.Find(".league-table tr").Each(func(i int, s *goquery.Selection) {
+	doc.Find(".row-gray").Each(func(i int, s *goquery.Selection) {
 		if (len(strings.TrimSpace(s.Find(".date").Text()))) > 0 {
 			dateString = strings.TrimSpace(s.Find(".date").Text())
 		} else {
-			isFullTime := "FT" == strings.TrimSpace(s.Find(".fd").Text())
+			isFullTime := "FT" == strings.TrimSpace(s.Find(".min").Text())
 			if(!isFullTime){
-				timeString := strings.TrimSpace(s.Find(".fd").Text())
+				timeString := strings.TrimSpace(s.Find(".min").Text())
 				matchDateString := dateString
 				if(!strings.Contains(dateString, "2015")){
 					matchDateString = dateString + ", 2014"
 				}
 				date, _ = time.Parse(fixtureDateFormat, matchDateString +", "+ timeString)
-				homeTeamName := strings.TrimSpace(s.Find(".fh").Text())
-				awayTeamName := strings.TrimSpace(s.Find(".fa").Text())
+				homeTeamName := strings.TrimSpace(s.Find(".name").First().Text())
+				awayTeamName := strings.TrimSpace(s.Find(".name").Last().Text())
 				fixtures = append(fixtures, rp.Fixture{Date:date, HomeTeamName:homeTeamName, AwayTeamName:awayTeamName})
 			}
 		}
