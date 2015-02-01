@@ -109,7 +109,7 @@ func GetLiveResults(id string) ([]rp.Result, error) {
 	}
 
 	date := time.Now()
-	doc.Find(".league-table tr").Each(func(i int, s *goquery.Selection) {
+	doc.Find(".row-gray tr").Each(func(i int, s *goquery.Selection) {
 		dateString := strings.TrimSpace(s.Find(".date").Text())
 		if (len(dateString)) > 0 {
 			date, _ = time.Parse(resultDateFormat, dateString +", 2015")
@@ -139,15 +139,15 @@ func GetResults(id string) ([]rp.Result, error) {
 	}
 
 	date := time.Now()
-	doc.Find(".league-table tr").Each(func(i int, s *goquery.Selection) {
-		dateString := strings.TrimSpace(s.Find(".date").Text())
+	doc.Find(".row-gray, .row-tall").Each(func(i int, s *goquery.Selection) {
+		dateString := strings.TrimSpace(s.Find(".fs11").Text())
 		if (len(dateString)) > 0 {
 			if(!strings.Contains(dateString, "2014")){
 				dateString = dateString + ", 2015"
 			}
 			date, _ = time.Parse(resultDateFormat, dateString)
 		} else {
-			link, _ := (s.Find(".fs a").Attr("href"))
+			link, _ := (s.Find(".scorelink").Attr("href"))
 			link = strings.TrimSpace(link)
 			results = append(results, resultDetails("http://livescore.com/"+link, date))
 		}
@@ -167,11 +167,12 @@ func resultDetails(url string, date time.Time) rp.Result {
 	if err != nil {
 		panic(err)
 	}
+
 	r, _ := regexp.Compile("[\\d]")
-	doc.Find(".row, .row-gray").Each(func(i int, s *goquery.Selection) {
+	doc.Find(".row, .row-gray, .row-tall").Each(func(i int, s *goquery.Selection) {
 		if 0 == i {
-			result.HomeTeamName = strings.TrimSpace(s.Find(".name").First().Text())
-			result.AwayTeamName = strings.TrimSpace(s.Find(".name").Last().Text())
+			result.HomeTeamName = strings.TrimSpace(s.Find(".ply").First().Text())
+			result.AwayTeamName = strings.TrimSpace(s.Find(".ply").Last().Text())
 			scoreString := strings.TrimSpace(s.Find(".sco").Text())
 			goals := r.FindAllString(scoreString, -1)
 			result.HomeGoals = parseToUint8(goals[0])
