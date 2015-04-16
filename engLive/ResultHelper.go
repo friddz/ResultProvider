@@ -139,7 +139,7 @@ func GetResults(id string) ([]rp.Result, error) {
 	}
 
 	date := time.Now()
-	doc.Find(".row-gray, .row-tall").Each(func(i int, s *goquery.Selection) {
+	doc.Find(".row-gray, .row-tall btn").Each(func(i int, s *goquery.Selection) {
 		dateString := strings.TrimSpace(s.Find(".fs11").Text())
 		if (len(dateString)) > 0 {
 			if(!strings.Contains(dateString, "2014")){
