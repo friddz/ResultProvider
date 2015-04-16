@@ -51,7 +51,9 @@ func GetAllFixtures(id string)([]rp.Fixture, error) {
 	date := time.Now()
 	dateString := ""
 	doc.Find(".row-gray, .row-tall").Each(func(i int, s *goquery.Selection) {
-		if (len(strings.TrimSpace(s.Find(".fs11").Text()))) > 0 {
+		if(0==i) {
+			//no op
+		} else if (len(strings.TrimSpace(s.Find(".fs11").Text()))) > 0 {
 			dateString = strings.TrimSpace(s.Find(".fs11").Text())
 		} else {
 			isFullTime := "FT" == strings.TrimSpace(s.Find(".min").Text())
