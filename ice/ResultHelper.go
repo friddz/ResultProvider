@@ -24,7 +24,9 @@ const confirmedResult = "S"
 
 func getInternalSeasonId(externalId string) string {
 
-	if externalId == "2014" {
+	if externalId == "2015" {
+		return "33503"
+	} else if externalId == "2014" {
 		return "32265"
 	} else if externalId == "2013" {
 		return "29465"
